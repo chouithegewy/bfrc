@@ -1,3 +1,5 @@
+use crate::piece::{Color, Piece, PieceType, Position};
+
 // struct Board
 //
 // has flat representation of the board (row major order)
@@ -15,7 +17,36 @@ pub struct Board {
 }
 
 impl Board {
-    fn new(self) -> Board {
+    pub fn print(self) {
+        for (i, piece) in self.board.iter().enumerate() {
+            if i % 8 == 0 {
+                println!();
+            }
+            match piece.piece_type {
+                PieceType::Empty => print!("_ "),
+                _ => match piece.piece_type {
+                    PieceType::King(Color::Black) => print!("k "),
+                    PieceType::Queen(Color::Black) => print!("q "),
+                    PieceType::Rook(Color::Black) => print!("r "),
+                    PieceType::Bishop(Color::Black) => print!("b "),
+                    PieceType::Knight(Color::Black) => print!("n "),
+                    PieceType::Pawn(Color::Black) => print!("p "),
+                    PieceType::King(Color::White) => print!("K "),
+                    PieceType::Queen(Color::White) => print!("Q "),
+                    PieceType::Rook(Color::White) => print!("R "),
+                    PieceType::Bishop(Color::White) => print!("B "),
+                    PieceType::Knight(Color::White) => print!("N "),
+                    PieceType::Pawn(Color::White) => print!("P "),
+                    _ => print!("?"),
+                },
+            }
+        }
+        println!();
+    }
+}
+
+impl Board {
+    pub fn new() -> Board {
         Board {
             board: [
                 Piece {
@@ -103,62 +134,14 @@ impl Board {
                     move_set: Vec::new(),
                 },
                 Piece {
-                    piece_type: PieceType::Pawn(Color::White),
+                    piece_type: PieceType::Pawn(Color::Black),
                     position: Position { row: 1, col: 6 },
                     move_history: Vec::new(),
                     move_set: Vec::new(),
                 },
                 Piece {
-                    piece_type: PieceType::Pawn(Color::White),
+                    piece_type: PieceType::Pawn(Color::Black),
                     position: Position { row: 1, col: 7 },
-                    move_history: Vec::new(),
-                    move_set: Vec::new(),
-                },
-                Piece {
-                    piece_type: PieceType::Empty,
-                    position: Position { row: 2, col: 0 },
-                    move_history: Vec::new(),
-                    move_set: Vec::new(),
-                },
-                Piece {
-                    piece_type: PieceType::Empty,
-                    position: Position { row: 2, col: 1 },
-                    move_history: Vec::new(),
-                    move_set: Vec::new(),
-                },
-                Piece {
-                    piece_type: PieceType::Empty,
-                    position: Position { row: 2, col: 2 },
-                    move_history: Vec::new(),
-                    move_set: Vec::new(),
-                },
-                Piece {
-                    piece_type: PieceType::Empty,
-                    position: Position { row: 2, col: 3 },
-                    move_history: Vec::new(),
-                    move_set: Vec::new(),
-                },
-                Piece {
-                    piece_type: PieceType::Empty,
-                    position: Position { row: 2, col: 4 },
-                    move_history: Vec::new(),
-                    move_set: Vec::new(),
-                },
-                Piece {
-                    piece_type: PieceType::Empty,
-                    position: Position { row: 2, col: 5 },
-                    move_history: Vec::new(),
-                    move_set: Vec::new(),
-                },
-                Piece {
-                    piece_type: PieceType::Empty,
-                    position: Position { row: 2, col: 6 },
-                    move_history: Vec::new(),
-                    move_set: Vec::new(),
-                },
-                Piece {
-                    piece_type: PieceType::Empty,
-                    position: Position { row: 2, col: 7 },
                     move_history: Vec::new(),
                     move_set: Vec::new(),
                 },
@@ -453,87 +436,4 @@ impl Board {
             ],
         }
     }
-}
-// user input is shorthand algebraic chess notation
-// Nf3, Qxa2, Kh8+, etc
-// parse string into move rust type
-// check if move is legal or not
-// if legal, update board state
-// if illegal, return error message
-//
-// struct Move
-// has start?
-// has end position
-// has piece type
-// has move type (capture, check, checkmate, etc)
-
-pub struct Move {
-    start: Option<Position>,
-    end: Position,
-    piece_type: PieceType,
-    move_type: MoveType,
-}
-
-// enum PieceType
-// King, Queen, Rook, Bishop, Knight, Pawn, Empty
-
-pub enum PieceType {
-    King(Color),
-    Queen(Color),
-    Rook(Color),
-    Bishop(Color),
-    Knight(Color),
-    Pawn(Color),
-    Empty,
-}
-
-// enum MoveType
-// Capture, Check, Checkmate, EnPassant, Castling, Promotion, Normal
-
-pub enum MoveType {
-    Capture,
-    Check,
-    Checkmate,
-    EnPassant,
-    Castling,
-    Promotion,
-    Normal,
-}
-
-// struct Piece
-// has piece type
-// has color
-// has position
-// has move history
-// has move set
-// has move set generator
-// has move set filter
-// has move set validator
-//
-
-pub struct Piece {
-    piece_type: PieceType,
-    position: Position,
-    move_history: Vec<Move>,
-    move_set: Vec<Move>,
-}
-
-//
-//
-// opponent AI
-// random move
-// pick random index
-// if piece at index is valid, move it
-// stockfish?
-//
-//
-
-pub struct Position {
-    row: u8,
-    col: u8,
-}
-
-pub enum Color {
-    White,
-    Black,
 }
