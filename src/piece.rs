@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+#![allow(unused_variables)]
 // struct Move
 // has start?
 // has end position
@@ -5,7 +7,7 @@
 // has move type (capture, check, checkmate, etc)
 #[derive(Debug)]
 pub struct Move {
-    start: Option<Position>,
+    start: Position,
     end: Position,
     piece_type: PieceType,
     move_type: MoveType,
@@ -61,8 +63,38 @@ pub struct Piece {
 // stockfish?
 #[derive(Debug)]
 pub struct Position {
-    pub row: u8,
-    pub col: u8,
+    pub row: usize,
+    pub col: usize,
+}
+
+impl PartialEq for Position {
+    fn eq(&self, other: &Self) -> bool {
+        self.row == other.row && self.col == other.col
+    }
+}
+
+impl Position {
+    pub fn new(row: usize, col: usize) -> Position {
+        Position { row, col }
+    }
+}
+
+impl Position {
+    pub fn as_str(&self) -> String {
+        let col = match self.col {
+            0 => "a",
+            1 => "b",
+            2 => "c",
+            3 => "d",
+            4 => "e",
+            5 => "f",
+            6 => "g",
+            7 => "h",
+            _ => "invalid",
+        };
+        let row = 8 - self.row;
+        format!("{}{}", col, row)
+    }
 }
 
 #[derive(Debug)]

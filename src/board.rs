@@ -17,7 +17,17 @@ pub struct Board {
 }
 
 impl Board {
-    pub fn print(self) {
+    pub fn get_piece_at_position(&self, position: Position) -> &Piece {
+        &self.board[8 * position.row * position.col]
+    }
+
+    pub fn get_piece_at_index(&self, row: usize, col: usize) -> &Piece {
+        &self.board[8 * row * col]
+    }
+}
+
+impl Board {
+    pub fn print(&self) {
         for (i, piece) in self.board.iter().enumerate() {
             if i % 8 == 0 {
                 println!();
