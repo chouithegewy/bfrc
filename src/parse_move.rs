@@ -21,7 +21,13 @@ pub fn parse_user_input(input: String) {
     let regex = regex::Regex::new(r"([Q|K|N|R|B])?([a-h]|[1-8])?(x)?([a-h][1-8])([+])?").unwrap();
     let caps = regex.captures(&input);
     match caps {
-        Some(caps) => {dbg!(&caps);}
+        Some(caps) => {
+            if caps.get(0).expect("I'm not sure.").len() != input.len() {
+                println!("Invalid move");
+                return
+            }
+            dbg!(&caps);
+        }
         None => {
             println!("Invalid move");
         }
