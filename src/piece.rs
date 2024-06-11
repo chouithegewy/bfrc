@@ -7,10 +7,12 @@
 // has move type (capture, check, checkmate, etc)
 #[derive(Debug)]
 pub struct Move {
-    start: Position,
-    end: Position,
-    piece_type: PieceType,
-    move_type: MoveType,
+    pub start_pos: Option<String>,
+    pub end_pos: Position,
+    pub piece_type: PieceType,
+    pub captures: bool,
+    pub move_type: MoveType,
+    pub check: bool,
 }
 
 // enum PieceType
@@ -27,13 +29,10 @@ pub enum PieceType {
 }
 
 // enum MoveType
-// Capture, Check, Checkmate, EnPassant, Castling, Promotion, Normal
+// Capture, Check, Checkmate, Castling, Promotion, Normal
 #[derive(Debug)]
 pub enum MoveType {
-    Capture,
-    Check,
     Checkmate,
-    EnPassant,
     Castling,
     Promotion,
     Normal,
@@ -75,6 +74,22 @@ impl PartialEq for Position {
 
 impl Position {
     pub fn new(row: usize, col: usize) -> Position {
+        Position { row, col }
+    }
+
+    pub fn from_str(s: &str) -> Position {
+        let col = match s.chars().nth(0).unwrap() {
+            'a' => 0,
+            'b' => 1,
+            'c' => 2,
+            'd' => 3,
+            'e' => 4,
+            'f' => 5,
+            'g' => 6,
+            'h' => 7,
+            _ => 0,
+        };
+        let row = 8 - s.chars().nth(1).unwrap().to_digit(10).unwrap() as usize;
         Position { row, col }
     }
 }

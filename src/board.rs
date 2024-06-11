@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+#![allow(unused_variables)]
 use crate::piece::{Color, Piece, PieceType, Position};
 
 // struct Board
