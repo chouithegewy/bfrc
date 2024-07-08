@@ -5,7 +5,7 @@
 // has end position
 // has piece type
 // has move type (capture, check, checkmate, etc)
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Move {
     pub start_pos: Option<String>,
     pub end_pos: Position,
@@ -17,7 +17,7 @@ pub struct Move {
 
 // enum PieceType
 // King, Queen, Rook, Bishop, Knight, Pawn, Empty
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub enum PieceType {
     King(Color),
     Queen(Color),
@@ -30,7 +30,7 @@ pub enum PieceType {
 
 // enum MoveType
 // Capture, Check, Checkmate, Castling, Promotion, Normal
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub enum MoveType {
     Checkmate,
     Castling,
@@ -47,7 +47,7 @@ pub enum MoveType {
 // has move set generator
 // has move set filter
 // has move set validator
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Piece {
     pub piece_type: PieceType,
     pub position: Position,
@@ -55,15 +55,26 @@ pub struct Piece {
     pub move_set: Vec<Move>,
 }
 
+impl Piece {
+    pub fn new(piece_type: PieceType, position: Position) -> Piece {
+        Piece {
+            piece_type,
+            position,
+            move_history: Vec::new(),
+            move_set: Vec::new(),
+        }
+    }
+}
+
 // opponent AI
 // random move
 // pick random index
 // if piece at index is valid, move it
 // stockfish?
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub struct Position {
-    pub row: usize,
-    pub col: usize,
+    pub row: i8,
+    pub col: i8,
 }
 
 impl PartialEq for Position {
@@ -73,7 +84,7 @@ impl PartialEq for Position {
 }
 
 impl Position {
-    pub fn new(row: usize, col: usize) -> Position {
+    pub fn new(row: i8, col: i8) -> Position {
         Position { row, col }
     }
 
@@ -89,8 +100,12 @@ impl Position {
             'h' => 7,
             _ => 0,
         };
-        let row = 8 - s.chars().nth(1).unwrap().to_digit(10).unwrap() as usize;
+        let row = 8 - s.chars().nth(1).unwrap().to_digit(10).unwrap() as i8;
         Position { row, col }
+    }
+
+    pub fn is_valid(&self) -> bool {
+        self.row < 8 && self.col < 8 && self.row >= 0 && self.col >= 0
     }
 }
 
@@ -112,7 +127,7 @@ impl Position {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub enum Color {
     White,
     Black,

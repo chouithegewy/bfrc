@@ -20,11 +20,17 @@ pub struct Board {
 
 impl Board {
     pub fn get_piece_at_position(&self, position: Position) -> &Piece {
-        &self.board[8 * position.row * position.col]
+        &self.board[8 * position.row as usize + position.col as usize]
     }
 
     pub fn get_piece_at_index(&self, row: usize, col: usize) -> &Piece {
-        &self.board[8 * row * col]
+        &self.board[8 * row + col]
+    }
+
+    pub fn set_piece(&mut self, piece: Piece) {
+        let row = piece.position.row.clone() as usize;
+        let col= piece.position.col.clone() as usize;
+        *&mut self.board[8 * row + col] = piece;
     }
 }
 
