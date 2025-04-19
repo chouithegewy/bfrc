@@ -28,9 +28,9 @@ impl Board {
     }
 
     pub fn set_piece(&mut self, piece: Piece) {
-        let row = piece.position.row.clone() as usize;
-        let col= piece.position.col.clone() as usize;
-        *&mut self.board[8 * row + col] = piece;
+        let row = piece.position.row as usize;
+        let col = piece.position.col as usize;
+        self.board[8 * row + col] = piece;
     }
 }
 

@@ -31,14 +31,14 @@ pub fn parse_user_input(input: String) -> Option<Move> {
                     start_pos: match &caps.get(1) {
                         Some(start_pos) => {
                             if start_pos.len() == 2 {
-                                Some(start_pos.as_str().to_string())
+                                Some(Position::from_str(start_pos.as_str()))
                             } else {
                                 None
                             }
                         }
                         None => None,
                     },
-                    end_pos: Position::from_str(&caps.get(5).unwrap().as_str()),
+                    end_pos: Position::from_str(caps.get(5).unwrap().as_str()),
                     piece_type: match &caps.get(2) {
                         Some(piece) => match piece.as_str() {
                             "Q" => PieceType::Queen(Color::White),
@@ -66,12 +66,12 @@ pub fn parse_user_input(input: String) -> Option<Move> {
                         None => false,
                     },
                 };
-                return Some(usermove);
+                Some(usermove)
             }
         }
         None => {
             println!("Invalid move");
-            return None;
+            None
         }
-    };
+    }
 }

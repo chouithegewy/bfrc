@@ -9,7 +9,7 @@ fn main() {
         board: board::Board::new(),
     };
     game.board.print();
-    while true {
+    loop {
         let userinput = parse_move::read_user_input();
         dbg!(&userinput);
         match parse_move::parse_user_input(userinput) {

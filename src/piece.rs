@@ -7,7 +7,7 @@
 // has move type (capture, check, checkmate, etc)
 #[derive(Debug, Clone)]
 pub struct Move {
-    pub start_pos: Option<String>,
+    pub start_pos: Option<Position>,
     pub end_pos: Position,
     pub piece_type: PieceType,
     pub captures: bool,
@@ -64,6 +64,18 @@ impl Piece {
             move_set: Vec::new(),
         }
     }
+
+    pub fn set_legal_moves(&mut self) {
+        match self.piece_type {
+            PieceType::King(color) => {},
+            PieceType::Queen(color) => {},
+            PieceType::Bishop(color) => {},
+            PieceType::Rook(color) => {},
+            PieceType::Pawn(color) => {},
+            PieceType::Knight(color) => {},
+            _ => {},
+        }
+    }
 }
 
 // opponent AI
@@ -88,6 +100,19 @@ impl Position {
         Position { row, col }
     }
 
+    pub fn increment_row(&mut self) {
+        self.row += 1;
+    }
+    pub fn increment_col(&mut self) {
+        self.col += 1;
+    }
+    pub fn decrement_row(&mut self) {
+        self.row -= 1;
+    }
+    pub fn decrement_col(&mut self) {
+        self.col -= 1;
+    }
+
     pub fn from_str(s: &str) -> Position {
         let col = match s.chars().nth(0).unwrap() {
             'a' => 0,
@@ -106,6 +131,21 @@ impl Position {
 
     pub fn is_valid(&self) -> bool {
         self.row < 8 && self.col < 8 && self.row >= 0 && self.col >= 0
+    }
+    // a move is legal if it is valid^ and if it satifies the following:
+    // - the player's king cannot be in check after the move (a piece that is 'pinned' cannot move, the king
+    // itself cannot be placed into check, including through castling)
+    // - the player's piece cannot move to a square already occupied by his own piece
+    // - each piece must follow its rules for movement and cannot move through another occupied
+    // piece (a knight can "hop", though)
+    // the method of determining legal moves is as follows:
+    // 1) check if valid
+    // 2) check if movement is correct for given piece and own piece does not occupy the square
+    // 3) make move
+    // 4) populate new board state, if the player's king is in check after making the move, then it
+    //    is an illegal move and revert the state
+    pub fn is_legal(&self, old_position: &Position) -> bool {
+        !(!&self.is_valid()) //lol wat
     }
 }
 
@@ -131,4 +171,11 @@ impl Position {
 pub enum Color {
     White,
     Black,
+}
+
+impl Move {
+    pub fn is_movement_valid(&self, from_pos: &Position) -> bool {
+        todo!();
+    }
+
 }

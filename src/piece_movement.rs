@@ -3,6 +3,7 @@
 #![allow(unused_imports)]
 use crate::piece::{Color, Move, MoveType, Piece, PieceType, Position};
 
+#[derive(Debug, Clone, Copy)]
 struct Direction {
     x: i8,
     y: i8,
@@ -45,7 +46,7 @@ fn generate_king_moves(piece: Piece) -> Vec<Move> {
         );
         while new_pos.is_valid() {
             move_set.push(Move {
-                start_pos: None,
+                start_pos: Some(piece.position),
                 end_pos: new_pos,
                 piece_type: piece.piece_type,
                 captures: false,
@@ -72,30 +73,44 @@ fn generate_rook_moves(piece: Piece) -> Vec<Move> {
         Direction::new(-1, 0),
         Direction::new(0, -1),
     ];
-    for direction in directions {
-        let mut new_pos_col = Position::new(piece.position.col + direction.x, piece.position.row);
-        let mut new_pos_row = Position::new(piece.position.col, piece.position.row + direction.y);
-        while new_pos_col.is_valid() {
+    for direction in &directions {
+        let new_pos = Position::new(
+            piece.position.col + direction.x,
+            piece.position.row + direction.y,
+        );
+        let mut x = direction.x;
+        let mut new_pos = Position::new(piece.position.col + x, piece.position.row);
+        while new_pos.is_valid() {
             move_set.push(Move {
-                start_pos: None,
-                end_pos: new_pos_col,
+                start_pos: Some(piece.position),
+                end_pos: new_pos,
                 piece_type: piece.piece_type,
                 captures: false,
                 move_type: MoveType::Normal,
                 check: false,
             });
-            new_pos_col = Position::new(new_pos_col.col + direction.x, new_pos_col.row);
+            new_pos = Position::new(new_pos.col + x, new_pos.row);
+            x += direction.x;
         }
-        while new_pos_row.is_valid() {
+    }
+    for direction in directions {
+        let new_pos = Position::new(
+            piece.position.col + direction.x,
+            piece.position.row + direction.y,
+        );
+        let mut y = direction.y;
+        while new_pos.is_valid() {
+            let mut new_pos = Position::new(piece.position.col, piece.position.row + y);
             move_set.push(Move {
                 start_pos: None,
-                end_pos: new_pos_row,
+                end_pos: new_pos,
                 piece_type: piece.piece_type,
                 captures: false,
                 move_type: MoveType::Normal,
                 check: false,
             });
-            new_pos_row = Position::new(new_pos_row.col, new_pos_row.row + direction.y);
+            new_pos = Position::new(new_pos.col, new_pos.row + y);
+            y += direction.y;
         }
     }
     move_set
