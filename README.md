@@ -1,7 +1,9 @@
 ### BLIND FOLD RANDOM CHESS
 
 When I got half way through K&R in ~2019, the C bible, it said something like "now you know enough to make large programs...".
-I started writing this program because it was something I could make I thought would be fun to play also. A lot you can do with variables, loops, and control flows!
+I started writing the first iteration of this program because it was something I could make I thought would be fun to play also.
+
+```A lot you can do with variables, loops, and control flows!```
 
 I didn't have the technical knowledge to create an "artifical intelligence," but making the game to play
 "blind fold" chess against a computer that makes only random legal moves would be and something that would be difficult, too! (for my chess skill anyway...)
