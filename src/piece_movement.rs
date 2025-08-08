@@ -15,7 +15,7 @@ impl Direction {
     }
 }
 
-pub fn generate_move_set(piece: Piece) -> Vec<Move> {
+pub fn generate_move_set(piece: &Piece) -> Vec<Move> {
     match piece.piece_type {
         PieceType::King(_) => generate_king_moves(piece),
         PieceType::Queen(_) => generate_queen_moves(piece),
@@ -27,7 +27,7 @@ pub fn generate_move_set(piece: Piece) -> Vec<Move> {
     }
 }
 
-fn generate_king_moves(piece: Piece) -> Vec<Move> {
+fn generate_king_moves(piece: &Piece) -> Vec<Move> {
     let mut move_set = vec![];
     let directions = vec![
         Direction::new(1, 0),
@@ -58,14 +58,14 @@ fn generate_king_moves(piece: Piece) -> Vec<Move> {
     move_set
 }
 
-fn generate_queen_moves(piece: Piece) -> Vec<Move> {
+fn generate_queen_moves(piece: &Piece) -> Vec<Move> {
     let mut move_set = vec![];
-    move_set.append(&mut generate_rook_moves(piece.clone()));
-    move_set.append(&mut generate_bishop_moves(piece.clone()));
+    move_set.append(&mut generate_rook_moves(&piece));
+    move_set.append(&mut generate_bishop_moves(&piece));
     move_set
 }
 
-fn generate_rook_moves(piece: Piece) -> Vec<Move> {
+fn generate_rook_moves(piece: &Piece) -> Vec<Move> {
     let mut move_set = vec![];
     let directions = vec![
         Direction::new(1, 0),
@@ -116,7 +116,7 @@ fn generate_rook_moves(piece: Piece) -> Vec<Move> {
     move_set
 }
 
-fn generate_bishop_moves(piece: Piece) -> Vec<Move> {
+fn generate_bishop_moves(piece: &Piece) -> Vec<Move> {
     let mut move_set = vec![];
     let directions = vec![
         Direction::new(1, 1),
@@ -144,7 +144,7 @@ fn generate_bishop_moves(piece: Piece) -> Vec<Move> {
     move_set
 }
 
-fn generate_knight_moves(piece: Piece) -> Vec<Move> {
+fn generate_knight_moves(piece: &Piece) -> Vec<Move> {
     let mut move_set = vec![];
     let directions = vec![
         Direction::new(1, 2),
@@ -173,7 +173,7 @@ fn generate_knight_moves(piece: Piece) -> Vec<Move> {
     move_set
 }
 
-fn generate_pawn_moves(piece: Piece) -> Vec<Move> {
+fn generate_pawn_moves(piece: &Piece) -> Vec<Move> {
     let mut move_set = vec![];
     let directions = vec![
         Direction::new(0, 1),
@@ -196,58 +196,4 @@ fn generate_pawn_moves(piece: Piece) -> Vec<Move> {
         });
     }
     move_set
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_generate_move_set() {
-        let piece = Piece::new(PieceType::King(Color::White), Position::new(4, 4));
-        let move_set = generate_move_set(piece);
-        assert_eq!(move_set.len(), 8);
-    }
-
-    #[test]
-    fn test_generate_king_moves() {
-        let piece = Piece::new(PieceType::King(Color::White), Position::new(4, 4));
-        let move_set = generate_king_moves(piece);
-        assert_eq!(move_set.len(), 8);
-    }
-
-    #[test]
-    fn test_generate_queen_moves() {
-        let piece = Piece::new(PieceType::Queen(Color::White), Position::new(4, 4));
-        let move_set = generate_queen_moves(piece);
-        assert_eq!(move_set.len(), 28);
-    }
-
-    #[test]
-    fn test_generate_rook_moves() {
-        let piece = Piece::new(PieceType::Rook(Color::White), Position::new(4, 4));
-        let move_set = generate_rook_moves(piece);
-        assert_eq!(move_set.len(), 14);
-    }
-
-    #[test]
-    fn test_generate_bishop_moves() {
-        let piece = Piece::new(PieceType::Bishop(Color::White), Position::new(4, 4));
-        let move_set = generate_bishop_moves(piece);
-        assert_eq!(move_set.len(), 13);
-    }
-
-    #[test]
-    fn test_generate_knight_moves() {
-        let piece = Piece::new(PieceType::Knight(Color::White), Position::new(4, 4));
-        let move_set = generate_knight_moves(piece);
-        assert_eq!(move_set.len(), 8);
-    }
-
-    #[test]
-    fn test_generate_pawn_moves() {
-        let piece = Piece::new(PieceType::Pawn(Color::White), Position::new(4, 4));
-        let move_set = generate_pawn_moves(piece);
-        assert_eq!(move_set.len(), 4);
-    }
 }

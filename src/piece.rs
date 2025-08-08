@@ -67,13 +67,13 @@ impl Piece {
 
     pub fn set_legal_moves(&mut self) {
         match self.piece_type {
-            PieceType::King(color) => {},
-            PieceType::Queen(color) => {},
-            PieceType::Bishop(color) => {},
-            PieceType::Rook(color) => {},
-            PieceType::Pawn(color) => {},
-            PieceType::Knight(color) => {},
-            _ => {},
+            PieceType::King(color) => {}
+            PieceType::Queen(color) => {}
+            PieceType::Bishop(color) => {}
+            PieceType::Rook(color) => {}
+            PieceType::Pawn(color) => {}
+            PieceType::Knight(color) => {}
+            _ => {}
         }
     }
 }
@@ -177,5 +177,4 @@ impl Move {
     pub fn is_movement_valid(&self, from_pos: &Position) -> bool {
         todo!();
     }
-
 }

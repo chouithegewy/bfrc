@@ -1,3 +1,5 @@
+use crate::piece_movement::generate_move_set;
+
 mod board;
 mod game;
 mod parse_move;
@@ -19,6 +21,12 @@ fn main() {
                     usermove.piece_type,
                     usermove.end_pos,
                 );
+                dbg!(dummypiece.clone());
+                let mut dummy_move_set_pos_str = generate_move_set(&dummypiece).iter().map(|p| p.end_pos.as_str()).collect::<Vec<_>>();
+                dummy_move_set_pos_str.sort();
+                dbg!(dummy_move_set_pos_str);
+                let dummy_move_set_pos = generate_move_set(&dummypiece).iter().map(|p| p.end_pos).collect::<Vec<_>>();
+                dbg!(dummy_move_set_pos);
                 game.board.set_piece(dummypiece);
                 //see if any piece can move to that location
                 //game.board.get_piece_at(that).move_piece(to);

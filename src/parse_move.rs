@@ -22,7 +22,6 @@ pub fn parse_user_input(input: String) -> Option<Move> {
     let caps = regex.captures(&input);
     match caps {
         Some(caps) => {
-            dbg!(&caps);
             if caps.get(0).unwrap().len() != input.len() {
                 println!("Invalid move");
                 return None;
