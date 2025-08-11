@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 #![allow(unused_variables)]
-use crate::piece::{Color, Piece, PieceType, Position};
+use crate::{piece::{Color, Piece, PieceType, Position}, piece_movement::generate_move_set};
 
 // struct Board
 //
@@ -19,7 +19,7 @@ pub struct Board {
 }
 
 impl Board {
-    pub fn get_piece_at_position(&self, position: Position) -> &Piece {
+    pub fn get_piece_at_position(&self, position: &Position) -> &Piece {
         &self.board[8 * position.row as usize + position.col as usize]
     }
 
@@ -31,6 +31,26 @@ impl Board {
         let row = piece.position.row as usize;
         let col = piece.position.col as usize;
         self.board[8 * row + col] = piece;
+    }
+    // a move is legal if it is valid^ and if it satifies the following:
+    // - the player's king cannot be in check after the move (a piece that is 'pinned' cannot move, the king
+    // itself cannot be placed into check, including through castling)
+    // - the player's piece cannot move to a square already occupied by his own piece
+    // - each piece must follow its rules for movement and cannot move through another occupied
+    // piece (a knight can "hop", though)
+    // the method of determining legal moves is as follows:
+    // 1) check if valid
+    // 2) check if movement is correct for given piece and own piece does not occupy the square
+    // 3) make move
+    // 4) populate new board state, if the player's king is in check after making the move, then it
+    //    is an illegal move and revert the state
+    pub fn is_legal(&self, src: &Position,  dst: &Position) -> bool {
+        if src.is_valid() && dst.is_valid() {
+            let piece = self.get_piece_at_position(src);
+            let move_set = generate_move_set(piece, self);
+
+        }
+        return false;
     }
 }
 

@@ -1,4 +1,4 @@
-use crate::piece::{Color, Move, MoveType, Piece, PieceType, Position};
+use crate::piece::{Color, Move, MoveType, PieceType, Position};
 use std::io;
 
 // user input is shorthand algebraic chess notation

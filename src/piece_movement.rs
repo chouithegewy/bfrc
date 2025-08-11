@@ -1,7 +1,10 @@
 #![allow(dead_code)]
 #![allow(unused_variables)]
 #![allow(unused_imports)]
-use crate::piece::{Color, Move, MoveType, Piece, PieceType, Position};
+use crate::{
+    board::Board,
+    piece::{Color, Move, MoveType, Piece, PieceType, Position},
+};
 
 #[derive(Debug, Clone, Copy)]
 struct Direction {
@@ -15,19 +18,19 @@ impl Direction {
     }
 }
 
-pub fn generate_move_set(piece: &Piece) -> Vec<Move> {
+pub fn generate_move_set(piece: &Piece, board: &Board) -> Vec<Move> {
     match piece.piece_type {
-        PieceType::King(_) => generate_king_moves(piece),
-        PieceType::Queen(_) => generate_queen_moves(piece),
-        PieceType::Rook(_) => generate_rook_moves(piece),
-        PieceType::Bishop(_) => generate_bishop_moves(piece),
-        PieceType::Knight(_) => generate_knight_moves(piece),
-        PieceType::Pawn(_) => generate_pawn_moves(piece),
+        PieceType::King(_) => generate_king_moves(piece, board),
+        PieceType::Queen(_) => generate_queen_moves(piece, board),
+        PieceType::Rook(_) => generate_rook_moves(piece, board),
+        PieceType::Bishop(_) => generate_bishop_moves(piece, board),
+        PieceType::Knight(_) => generate_knight_moves(piece, board),
+        PieceType::Pawn(_) => generate_pawn_moves(piece, board),
         PieceType::Empty => vec![],
     }
 }
 
-fn generate_king_moves(piece: &Piece) -> Vec<Move> {
+fn generate_king_moves(piece: &Piece, board: &Board) -> Vec<Move> {
     let mut move_set = vec![];
     let directions = vec![
         Direction::new(1, 0),
@@ -44,7 +47,7 @@ fn generate_king_moves(piece: &Piece) -> Vec<Move> {
             piece.position.col + direction.x,
             piece.position.row + direction.y,
         );
-        while new_pos.is_valid() {
+        if new_pos.is_valid() && new_pos.is_empty_or_not_same_color(piece, board) {
             move_set.push(Move {
                 start_pos: Some(piece.position),
                 end_pos: new_pos,
@@ -58,14 +61,14 @@ fn generate_king_moves(piece: &Piece) -> Vec<Move> {
     move_set
 }
 
-fn generate_queen_moves(piece: &Piece) -> Vec<Move> {
+fn generate_queen_moves(piece: &Piece, board: &Board) -> Vec<Move> {
     let mut move_set = vec![];
-    move_set.append(&mut generate_rook_moves(&piece));
-    move_set.append(&mut generate_bishop_moves(&piece));
+    move_set.append(&mut generate_rook_moves(&piece, board));
+    move_set.append(&mut generate_bishop_moves(&piece, board));
     move_set
 }
 
-fn generate_rook_moves(piece: &Piece) -> Vec<Move> {
+fn generate_rook_moves(piece: &Piece, board: &Board) -> Vec<Move> {
     let mut move_set = vec![];
     let directions = vec![
         Direction::new(1, 0),
@@ -74,13 +77,11 @@ fn generate_rook_moves(piece: &Piece) -> Vec<Move> {
         Direction::new(0, -1),
     ];
     for direction in &directions {
-        let new_pos = Position::new(
+        let mut new_pos = Position::new(
             piece.position.col + direction.x,
             piece.position.row + direction.y,
         );
-        let mut x = direction.x;
-        let mut new_pos = Position::new(piece.position.col + x, piece.position.row);
-        while new_pos.is_valid() {
+        while new_pos.is_valid() && new_pos.is_empty_or_not_same_color(piece, board) {
             move_set.push(Move {
                 start_pos: Some(piece.position),
                 end_pos: new_pos,
@@ -89,34 +90,14 @@ fn generate_rook_moves(piece: &Piece) -> Vec<Move> {
                 move_type: MoveType::Normal,
                 check: false,
             });
-            new_pos = Position::new(new_pos.col + x, new_pos.row);
-            x += direction.x;
+            new_pos = Position::new(new_pos.col + direction.x, new_pos.row + direction.y);
         }
     }
-    for direction in directions {
-        let new_pos = Position::new(
-            piece.position.col + direction.x,
-            piece.position.row + direction.y,
-        );
-        let mut y = direction.y;
-        while new_pos.is_valid() {
-            let mut new_pos = Position::new(piece.position.col, piece.position.row + y);
-            move_set.push(Move {
-                start_pos: None,
-                end_pos: new_pos,
-                piece_type: piece.piece_type,
-                captures: false,
-                move_type: MoveType::Normal,
-                check: false,
-            });
-            new_pos = Position::new(new_pos.col, new_pos.row + y);
-            y += direction.y;
-        }
-    }
+
     move_set
 }
 
-fn generate_bishop_moves(piece: &Piece) -> Vec<Move> {
+fn generate_bishop_moves(piece: &Piece, board: &Board) -> Vec<Move> {
     let mut move_set = vec![];
     let directions = vec![
         Direction::new(1, 1),
@@ -129,7 +110,7 @@ fn generate_bishop_moves(piece: &Piece) -> Vec<Move> {
             piece.position.col + direction.x,
             piece.position.row + direction.y,
         );
-        while new_pos.is_valid() {
+        while new_pos.is_valid() && new_pos.is_empty_or_not_same_color(piece, board) {
             move_set.push(Move {
                 start_pos: None,
                 end_pos: new_pos,
@@ -144,7 +125,7 @@ fn generate_bishop_moves(piece: &Piece) -> Vec<Move> {
     move_set
 }
 
-fn generate_knight_moves(piece: &Piece) -> Vec<Move> {
+fn generate_knight_moves(piece: &Piece, board: &Board) -> Vec<Move> {
     let mut move_set = vec![];
     let directions = vec![
         Direction::new(1, 2),
@@ -161,19 +142,21 @@ fn generate_knight_moves(piece: &Piece) -> Vec<Move> {
             piece.position.col + direction.x,
             piece.position.row + direction.y,
         );
-        move_set.push(Move {
-            start_pos: None,
-            end_pos: new_pos,
-            piece_type: piece.piece_type,
-            captures: false,
-            move_type: MoveType::Normal,
-            check: false,
-        });
+        if new_pos.is_valid() && new_pos.is_empty_or_not_same_color(piece, board) {
+            move_set.push(Move {
+                start_pos: None,
+                end_pos: new_pos,
+                piece_type: piece.piece_type,
+                captures: false,
+                move_type: MoveType::Normal,
+                check: false,
+            });
+        }
     }
     move_set
 }
 
-fn generate_pawn_moves(piece: &Piece) -> Vec<Move> {
+fn generate_pawn_moves(piece: &Piece, board: &Board) -> Vec<Move> {
     let mut move_set = vec![];
     let directions = vec![
         Direction::new(0, 1),
@@ -186,14 +169,16 @@ fn generate_pawn_moves(piece: &Piece) -> Vec<Move> {
             piece.position.col + direction.x,
             piece.position.row + direction.y,
         );
-        move_set.push(Move {
-            start_pos: None,
-            end_pos: new_pos,
-            piece_type: piece.piece_type,
-            captures: false,
-            move_type: MoveType::Normal,
-            check: false,
-        });
+        if new_pos.is_valid() && new_pos.is_empty_or_not_same_color(piece, board) {
+            move_set.push(Move {
+                start_pos: None,
+                end_pos: new_pos,
+                piece_type: piece.piece_type,
+                captures: false,
+                move_type: MoveType::Normal,
+                check: false,
+            });
+        }
     }
     move_set
 }

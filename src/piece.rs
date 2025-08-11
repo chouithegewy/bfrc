@@ -1,5 +1,7 @@
 #![allow(dead_code)]
 #![allow(unused_variables)]
+
+use crate::board::Board;
 // struct Move
 // has start?
 // has end position
@@ -76,6 +78,18 @@ impl Piece {
             _ => {}
         }
     }
+
+    pub fn get_color(&self) -> Option<Color> {
+        match self.piece_type {
+            PieceType::Knight(color) => Some(color),
+            PieceType::King(color) => Some(color),
+            PieceType::Queen(color) => Some(color),
+            PieceType::Pawn(color) => Some(color),
+            PieceType::Bishop(color) => Some(color),
+            PieceType::Rook(color) => Some(color),
+            PieceType::Empty => None,
+        }
+    }
 }
 
 // opponent AI
@@ -132,20 +146,14 @@ impl Position {
     pub fn is_valid(&self) -> bool {
         self.row < 8 && self.col < 8 && self.row >= 0 && self.col >= 0
     }
-    // a move is legal if it is valid^ and if it satifies the following:
-    // - the player's king cannot be in check after the move (a piece that is 'pinned' cannot move, the king
-    // itself cannot be placed into check, including through castling)
-    // - the player's piece cannot move to a square already occupied by his own piece
-    // - each piece must follow its rules for movement and cannot move through another occupied
-    // piece (a knight can "hop", though)
-    // the method of determining legal moves is as follows:
-    // 1) check if valid
-    // 2) check if movement is correct for given piece and own piece does not occupy the square
-    // 3) make move
-    // 4) populate new board state, if the player's king is in check after making the move, then it
-    //    is an illegal move and revert the state
-    pub fn is_legal(&self, old_position: &Position) -> bool {
-        !(!&self.is_valid()) //lol wat
+
+    // check if square contains no piece or a piece of the opposite color
+    pub fn is_empty_or_not_same_color(&self, other: &Piece, board: &Board) -> bool {
+        let current = board.get_piece_at_position(self);
+        match current.piece_type {
+            PieceType::Empty => true,
+            _ => current.get_color() != other.get_color(),
+        }
     }
 }
 
@@ -167,7 +175,7 @@ impl Position {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Color {
     White,
     Black,
