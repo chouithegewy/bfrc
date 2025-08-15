@@ -19,7 +19,7 @@ pub struct Move {
 
 // enum PieceType
 // King, Queen, Rook, Bishop, Knight, Pawn, Empty
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum PieceType {
     King(Color),
     Queen(Color),
@@ -79,7 +79,7 @@ impl Piece {
         }
     }
 
-    pub fn get_color(&self) -> Option<Color> {
+    pub fn color(&self) -> Option<Color> {
         match self.piece_type {
             PieceType::Knight(color) => Some(color),
             PieceType::King(color) => Some(color),
@@ -88,6 +88,15 @@ impl Piece {
             PieceType::Bishop(color) => Some(color),
             PieceType::Rook(color) => Some(color),
             PieceType::Empty => None,
+        }
+    }
+
+    pub fn is_empty_or_not_same_color(&self, dst: &Position, board: &Board) -> bool {
+        let dst = board.get_piece_at_position(dst);
+        //dbg!(dst);
+        match dst.piece_type {
+            PieceType::Empty => true,
+            _ => self.color().expect("src not empty") != dst.color().expect("dst not empty"),
         }
     }
 }
@@ -145,15 +154,6 @@ impl Position {
 
     pub fn is_valid(&self) -> bool {
         self.row < 8 && self.col < 8 && self.row >= 0 && self.col >= 0
-    }
-
-    // check if square contains no piece or a piece of the opposite color
-    pub fn is_empty_or_not_same_color(&self, other: &Piece, board: &Board) -> bool {
-        let current = board.get_piece_at_position(self);
-        match current.piece_type {
-            PieceType::Empty => true,
-            _ => current.get_color() != other.get_color(),
-        }
     }
 }
 

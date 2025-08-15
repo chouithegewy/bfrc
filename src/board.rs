@@ -1,6 +1,9 @@
 #![allow(dead_code)]
 #![allow(unused_variables)]
-use crate::{piece::{Color, Piece, PieceType, Position}, piece_movement::generate_move_set};
+use crate::{
+    piece::{Color, Piece, PieceType, Position},
+    piece_movement::generate_move_set,
+};
 
 // struct Board
 //
@@ -23,14 +26,36 @@ impl Board {
         &self.board[8 * position.row as usize + position.col as usize]
     }
 
-    pub fn get_piece_at_index(&self, row: usize, col: usize) -> &Piece {
-        &self.board[8 * row + col]
+    pub fn get_mut_piece_at_position(&mut self, position: &Position) -> &mut Piece {
+        &mut self.board[8 * position.row as usize + position.col as usize]
+    }
+
+    pub fn set_piece_at_position(&mut self, piece: Piece, position: &Position) {
+        self.board[8 * position.row as usize + position.col as usize] = piece;
+    }
+
+    pub fn get_piece_at_index(&self, index: usize) -> &Piece {
+        &self.board[index]
+    }
+
+    pub fn get_pieces_of_type(&self, piece_type: PieceType) -> Vec<&Piece> {
+        let mut pieces = vec![];
+        for piece in self.board.iter() {
+            if piece.piece_type == piece_type {
+                pieces.push(piece);
+            }
+        }
+        pieces
     }
 
     pub fn set_piece(&mut self, piece: Piece) {
         let row = piece.position.row as usize;
         let col = piece.position.col as usize;
         self.board[8 * row + col] = piece;
+    }
+    pub fn set_square_empty(&mut self, position: &Position) {
+        let p = self.get_mut_piece_at_position(position);
+        p.piece_type = PieceType::Empty;
     }
     // a move is legal if it is valid^ and if it satifies the following:
     // - the player's king cannot be in check after the move (a piece that is 'pinned' cannot move, the king
@@ -44,11 +69,10 @@ impl Board {
     // 3) make move
     // 4) populate new board state, if the player's king is in check after making the move, then it
     //    is an illegal move and revert the state
-    pub fn is_legal(&self, src: &Position,  dst: &Position) -> bool {
+    pub fn is_legal(&self, src: &Position, dst: &Position) -> bool {
         if src.is_valid() && dst.is_valid() {
             let piece = self.get_piece_at_position(src);
             let move_set = generate_move_set(piece, self);
-
         }
         return false;
     }
