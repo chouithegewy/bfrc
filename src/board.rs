@@ -1,7 +1,7 @@
 #![allow(dead_code)]
 #![allow(unused_variables)]
 use crate::{
-    piece::{Color, Piece, PieceType, Position},
+    piece::{Color, Move, MoveType, Piece, PieceType, Position},
     piece_movement::generate_move_set,
 };
 
@@ -57,6 +57,49 @@ impl Board {
         let p = self.get_mut_piece_at_position(position);
         p.piece_type = PieceType::Empty;
     }
+
+    pub fn get_black_pieces(&self) -> Vec<&Piece> {
+        let mut black_pieces = vec![];
+        for p in self.board.iter() {
+            let black_piece = match p.piece_type {
+                PieceType::King(color) => color == Color::Black,
+                PieceType::Queen(color) => color == Color::Black,
+                PieceType::Bishop(color) => color == Color::Black,
+                PieceType::Rook(color) => color == Color::Black,
+                PieceType::Pawn(color) => color == Color::Black,
+                PieceType::Knight(color) => color == Color::Black,
+                PieceType::Empty => false,
+            };
+            if black_piece == true {
+                black_pieces.push(p);
+            }
+        }
+        black_pieces
+    }
+
+    // generate a random move for black
+    pub fn generate_random_legal_move_for_black(&mut self) -> Option<Piece> {
+        let black_pieces = self.get_black_pieces();
+        for bp in black_pieces {
+            let bm = Move {
+                start_pos: None,
+                end_pos: bp.position,
+                piece_type: bp.piece_type,
+                captures: false,
+                move_type: MoveType::Normal,
+                check: false,
+            }; // change
+            let moves = generate_move_set(&bm, self, bp.color().expect("Failed to get color"));
+            for m in moves {
+                let backup = self.get_piece_at_position(&m.end_pos);
+                let piece = Piece::new(m.piece_type, m.end_pos);
+                self.set_piece(piece.clone());
+                return Some(piece);
+            }
+        }
+        None
+    }
+
     // a move is legal if it is valid^ and if it satifies the following:
     // - the player's king cannot be in check after the move (a piece that is 'pinned' cannot move, the king
     // itself cannot be placed into check, including through castling)
@@ -69,13 +112,13 @@ impl Board {
     // 3) make move
     // 4) populate new board state, if the player's king is in check after making the move, then it
     //    is an illegal move and revert the state
-    pub fn is_legal(&self, src: &Position, dst: &Position) -> bool {
-        if src.is_valid() && dst.is_valid() {
-            let piece = self.get_piece_at_position(src);
-            let move_set = generate_move_set(piece, self);
-        }
-        return false;
-    }
+    //pub fn is_legal(&self, src: &Position, dst: &Position) -> bool {
+    //    if src.is_valid() && dst.is_valid() {
+    //        let piece = self.get_piece_at_position(src);
+    //        let move_set = generate_move_set(piece, self);
+    //    }
+    //    return false;
+    //}
 }
 
 impl Board {

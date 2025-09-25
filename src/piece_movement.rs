@@ -18,19 +18,19 @@ impl Direction {
     }
 }
 
-pub fn generate_move_set(piece: &Piece, board: &Board) -> Vec<Move> {
-    match piece.piece_type {
-        PieceType::King(_) => generate_king_moves(piece, board),
-        PieceType::Queen(_) => generate_queen_moves(piece, board),
-        PieceType::Rook(_) => generate_rook_moves(piece, board),
-        PieceType::Bishop(_) => generate_bishop_moves(piece, board),
-        PieceType::Knight(_) => generate_knight_moves(piece, board),
-        PieceType::Pawn(_) => generate_pawn_moves(piece, board),
+pub fn generate_move_set(mv: &Move, board: &Board, color: Color) -> Vec<Move> {
+    match mv.piece_type {
+        PieceType::King(_) => generate_king_moves(mv, board, color),
+        PieceType::Queen(_) => generate_queen_moves(mv, board, color),
+        PieceType::Rook(_) => generate_rook_moves(mv, board, color),
+        PieceType::Bishop(_) => generate_bishop_moves(mv, board, color),
+        PieceType::Knight(_) => generate_knight_moves(mv, board, color),
+        PieceType::Pawn(_) => generate_pawn_moves(mv, board, color),
         PieceType::Empty => vec![],
     }
 }
 
-fn generate_king_moves(piece: &Piece, board: &Board) -> Vec<Move> {
+fn generate_king_moves(mv: &Move, board: &Board, color: Color) -> Vec<Move> {
     let mut move_set = vec![];
     let directions = vec![
         Direction::new(1, 0),
@@ -44,14 +44,14 @@ fn generate_king_moves(piece: &Piece, board: &Board) -> Vec<Move> {
     ];
     for direction in directions {
         let new_pos = Position::new(
-            piece.position.row + direction.y,
-            piece.position.col + direction.x,
+            mv.start_pos.expect("Failed to unwrap start_pos").row + direction.y,
+            mv.start_pos.expect("Failed to unwrap start_pos").col + direction.x,
         );
-        if new_pos.is_valid() && piece.is_empty_or_not_same_color(&new_pos, board) {
+        if new_pos.is_valid() && Some(color) != board.get_piece_at_position(&new_pos).color() {
             move_set.push(Move {
-                start_pos: Some(piece.position),
+                start_pos: mv.start_pos,
                 end_pos: new_pos,
-                piece_type: piece.piece_type,
+                piece_type: mv.piece_type,
                 captures: false,
                 move_type: MoveType::Normal,
                 check: false,
@@ -61,14 +61,14 @@ fn generate_king_moves(piece: &Piece, board: &Board) -> Vec<Move> {
     move_set
 }
 
-fn generate_queen_moves(piece: &Piece, board: &Board) -> Vec<Move> {
+fn generate_queen_moves(mv: &Move, board: &Board, color: Color) -> Vec<Move> {
     let mut move_set = vec![];
-    move_set.append(&mut generate_rook_moves(&piece, board));
-    move_set.append(&mut generate_bishop_moves(&piece, board));
+    move_set.append(&mut generate_rook_moves(&mv, board, color));
+    move_set.append(&mut generate_bishop_moves(&mv, board, color));
     move_set
 }
 
-fn generate_rook_moves(piece: &Piece, board: &Board) -> Vec<Move> {
+fn generate_rook_moves(mv: &Move, board: &Board, color: Color) -> Vec<Move> {
     let mut move_set = vec![];
     let directions = vec![
         Direction::new(1, 0),
@@ -78,14 +78,14 @@ fn generate_rook_moves(piece: &Piece, board: &Board) -> Vec<Move> {
     ];
     for direction in &directions {
         let mut new_pos = Position::new(
-            piece.position.row + direction.y,
-            piece.position.col + direction.x,
+            mv.start_pos.expect("Failed to unwrap start_pos").row + direction.y,
+            mv.start_pos.expect("Failed to unwrap start_pos").col + direction.x,
         );
-        while new_pos.is_valid() && piece.is_empty_or_not_same_color(&new_pos, board) {
+        while new_pos.is_valid() && Some(color) != board.get_piece_at_position(&new_pos).color() {
             move_set.push(Move {
-                start_pos: Some(piece.position),
+                start_pos: mv.start_pos,
                 end_pos: new_pos,
-                piece_type: piece.piece_type,
+                piece_type: mv.piece_type,
                 captures: false,
                 move_type: MoveType::Normal,
                 check: false,
@@ -97,7 +97,7 @@ fn generate_rook_moves(piece: &Piece, board: &Board) -> Vec<Move> {
     move_set
 }
 
-fn generate_bishop_moves(piece: &Piece, board: &Board) -> Vec<Move> {
+fn generate_bishop_moves(mv: &Move, board: &Board, color: Color) -> Vec<Move> {
     let mut move_set = vec![];
     let directions = vec![
         Direction::new(1, 1),
@@ -107,14 +107,14 @@ fn generate_bishop_moves(piece: &Piece, board: &Board) -> Vec<Move> {
     ];
     for direction in directions {
         let mut new_pos = Position::new(
-            piece.position.col + direction.x,
-            piece.position.row + direction.y,
+            mv.start_pos.expect("Failed to unwrap start_pos").col + direction.x,
+            mv.start_pos.expect("Failed to unwrap start_pos").row + direction.y,
         );
-        while new_pos.is_valid() && piece.is_empty_or_not_same_color(&new_pos, board) {
+        while new_pos.is_valid() && Some(color) != board.get_piece_at_position(&new_pos).color() {
             move_set.push(Move {
-                start_pos: Some(piece.position),
+                start_pos: mv.start_pos,
                 end_pos: new_pos,
-                piece_type: piece.piece_type,
+                piece_type: mv.piece_type,
                 captures: false,
                 move_type: MoveType::Normal,
                 check: false,
@@ -125,7 +125,7 @@ fn generate_bishop_moves(piece: &Piece, board: &Board) -> Vec<Move> {
     move_set
 }
 
-fn generate_knight_moves(piece: &Piece, board: &Board) -> Vec<Move> {
+fn generate_knight_moves(mv: &Move, board: &Board, color: Color) -> Vec<Move> {
     let mut move_set = vec![];
     let directions = vec![
         Direction::new(1, 2),
@@ -139,15 +139,17 @@ fn generate_knight_moves(piece: &Piece, board: &Board) -> Vec<Move> {
     ];
     for direction in directions {
         let new_pos = Position::new(
-            piece.position.row + direction.y,
-            piece.position.col + direction.x,
+            mv.start_pos.expect("Failed to unwrap start_pos").row + direction.y,
+            mv.start_pos.expect("Failed to unwrap start_pos").col + direction.x,
         );
 
-        if new_pos.is_valid() && piece.is_empty_or_not_same_color(&new_pos, board) {
+        dbg!(new_pos.as_str());
+
+        if new_pos.is_valid() && Some(color) != board.get_piece_at_position(&new_pos).color() {
             move_set.push(Move {
-                start_pos: Some(piece.position),
+                start_pos: mv.start_pos,
                 end_pos: new_pos,
-                piece_type: piece.piece_type,
+                piece_type: mv.piece_type,
                 captures: false,
                 move_type: MoveType::Normal,
                 check: false,
@@ -157,24 +159,54 @@ fn generate_knight_moves(piece: &Piece, board: &Board) -> Vec<Move> {
     move_set
 }
 
-fn generate_pawn_moves(piece: &Piece, board: &Board) -> Vec<Move> {
+fn generate_pawn_moves(mv: &Move, board: &Board, color: Color) -> Vec<Move> {
     let mut move_set = vec![];
-    let directions = vec![
-        Direction::new(0, 1),
-        Direction::new(0, 2),
-        Direction::new(1, 1),
-        Direction::new(-1, 1),
-    ];
+    let directions = match mv.captures {
+        false => {
+            vec![
+                // black
+                Direction::new(0, 1),
+                Direction::new(0, 2), // if piece on starting rank
+                // white
+                Direction::new(0, -1),
+                Direction::new(0, -2), // if piece on starting rank
+            ]
+        }
+        true => {
+            vec![
+                Direction::new(1, 1),
+                Direction::new(-1, 1),
+                Direction::new(1, -1),
+                Direction::new(-1, -1),
+            ]
+        }
+    };
+
     for direction in directions {
         let new_pos = Position::new(
-            piece.position.row + direction.y,
-            piece.position.col + direction.x,
+            mv.start_pos.expect("Failed to unwrap start_pos").row + direction.y,
+            mv.start_pos.expect("Failed to unwrap start_pos").col + direction.x,
         );
-        if new_pos.is_valid() && piece.is_empty_or_not_same_color(&new_pos, board) {
+        if direction.y == 2 {
+            match color {
+                Color::White => {
+                    if new_pos.row != 6 {
+                        continue;
+                    }
+                }
+                Color::Black => {
+                    if new_pos.row != 1 {
+                        continue;
+                    }
+                }
+            }
+        }
+        //println!("{}", new_pos.as_str());
+        if new_pos.is_valid() && Some(color) != board.get_piece_at_position(&new_pos).color() {
             move_set.push(Move {
-                start_pos: Some(piece.position),
+                start_pos: mv.start_pos,
                 end_pos: new_pos,
-                piece_type: piece.piece_type,
+                piece_type: mv.piece_type,
                 captures: false,
                 move_type: MoveType::Normal,
                 check: false,

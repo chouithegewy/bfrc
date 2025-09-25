@@ -18,7 +18,7 @@ pub fn read_user_input() -> String {
 
 pub fn parse_user_input(input: String) -> Option<Move> {
     //-> Move {
-    let regex = regex::Regex::new(r"(([Q|K|N|R|B])([a-h]|[1-8])?)?(x)?([a-h][1-8])([+])?").unwrap();
+    let regex = regex::Regex::new(r"(([Q|K|N|R|B])?([a-h]|[1-8])?)(x)?([a-h][1-8])([+])?").unwrap();
     let caps = regex.captures(&input);
     match caps {
         Some(caps) => {

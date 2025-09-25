@@ -93,7 +93,6 @@ impl Piece {
 
     pub fn is_empty_or_not_same_color(&self, dst: &Position, board: &Board) -> bool {
         let dst = board.get_piece_at_position(dst);
-        //dbg!(dst);
         match dst.piece_type {
             PieceType::Empty => true,
             _ => self.color().expect("src not empty") != dst.color().expect("dst not empty"),
