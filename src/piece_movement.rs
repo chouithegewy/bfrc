@@ -50,7 +50,7 @@ fn generate_king_moves(mv: &Move, board: &Board, color: Color) -> Vec<Move> {
         if new_pos.is_valid() && Some(color) != board.get_piece_at_position(&new_pos).color() {
             move_set.push(Move {
                 start_pos: mv.start_pos,
-                end_pos: new_pos,
+                end_pos: Some(new_pos),
                 piece_type: mv.piece_type,
                 captures: false,
                 move_type: MoveType::Normal,
@@ -84,7 +84,7 @@ fn generate_rook_moves(mv: &Move, board: &Board, color: Color) -> Vec<Move> {
         while new_pos.is_valid() && Some(color) != board.get_piece_at_position(&new_pos).color() {
             move_set.push(Move {
                 start_pos: mv.start_pos,
-                end_pos: new_pos,
+                end_pos: Some(new_pos),
                 piece_type: mv.piece_type,
                 captures: false,
                 move_type: MoveType::Normal,
@@ -113,7 +113,7 @@ fn generate_bishop_moves(mv: &Move, board: &Board, color: Color) -> Vec<Move> {
         while new_pos.is_valid() && Some(color) != board.get_piece_at_position(&new_pos).color() {
             move_set.push(Move {
                 start_pos: mv.start_pos,
-                end_pos: new_pos,
+                end_pos: Some(new_pos),
                 piece_type: mv.piece_type,
                 captures: false,
                 move_type: MoveType::Normal,
@@ -143,12 +143,12 @@ fn generate_knight_moves(mv: &Move, board: &Board, color: Color) -> Vec<Move> {
             mv.start_pos.expect("Failed to unwrap start_pos").col + direction.x,
         );
 
-        dbg!(new_pos.as_str());
+        //dbg!(new_pos.as_str());
 
         if new_pos.is_valid() && Some(color) != board.get_piece_at_position(&new_pos).color() {
             move_set.push(Move {
                 start_pos: mv.start_pos,
-                end_pos: new_pos,
+                end_pos: Some(new_pos),
                 piece_type: mv.piece_type,
                 captures: false,
                 move_type: MoveType::Normal,
@@ -205,7 +205,7 @@ fn generate_pawn_moves(mv: &Move, board: &Board, color: Color) -> Vec<Move> {
         if new_pos.is_valid() && Some(color) != board.get_piece_at_position(&new_pos).color() {
             move_set.push(Move {
                 start_pos: mv.start_pos,
-                end_pos: new_pos,
+                end_pos: Some(new_pos),
                 piece_type: mv.piece_type,
                 captures: false,
                 move_type: MoveType::Normal,

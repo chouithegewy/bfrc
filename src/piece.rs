@@ -10,7 +10,7 @@ use crate::board::Board;
 #[derive(Debug, Clone)]
 pub struct Move {
     pub start_pos: Option<Position>,
-    pub end_pos: Position,
+    pub end_pos: Option<Position>,
     pub piece_type: PieceType,
     pub captures: bool,
     pub move_type: MoveType,

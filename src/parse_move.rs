@@ -37,7 +37,7 @@ pub fn parse_user_input(input: String) -> Option<Move> {
                         }
                         None => None,
                     },
-                    end_pos: Position::from_str(caps.get(5).unwrap().as_str()),
+                    end_pos: Some(Position::from_str(caps.get(5).unwrap().as_str())),
                     piece_type: match &caps.get(2) {
                         Some(piece) => match piece.as_str() {
                             "Q" => PieceType::Queen(Color::White),

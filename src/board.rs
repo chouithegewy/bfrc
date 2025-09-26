@@ -78,12 +78,12 @@ impl Board {
     }
 
     // generate a random move for black
-    pub fn generate_random_legal_move_for_black(&mut self) -> Option<Piece> {
+    pub fn generate_random_legal_move_for_black(&mut self) -> Option<Move> {
         let black_pieces = self.get_black_pieces();
         for bp in black_pieces {
             let bm = Move {
-                start_pos: None,
-                end_pos: bp.position,
+                start_pos: Some(bp.position),
+                end_pos: None,
                 piece_type: bp.piece_type,
                 captures: false,
                 move_type: MoveType::Normal,
@@ -91,10 +91,14 @@ impl Board {
             }; // change
             let moves = generate_move_set(&bm, self, bp.color().expect("Failed to get color"));
             for m in moves {
-                let backup = self.get_piece_at_position(&m.end_pos);
-                let piece = Piece::new(m.piece_type, m.end_pos);
-                self.set_piece(piece.clone());
-                return Some(piece);
+                dbg!(&m);
+                //let backup =
+                //    self.get_piece_at_position(&m.end_pos.expect("Failed to unwrap end_pos"));
+                //let piece = Piece::new(m.piece_type, m.end_pos.expect("Failed to unwrap end_pos"));
+                //self.set_piece(piece.clone());
+                //self.set_square_empty(&backup.position);
+                //self.print();
+                return Some(m);
             }
         }
         None
